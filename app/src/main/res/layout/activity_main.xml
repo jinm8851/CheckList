@@ -66,36 +66,28 @@
 
         <EditText
             android:id="@+id/time"
-            android:layout_width="78dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginLeft="3dp"
+            android:layout_weight="1"
             android:gravity="center_vertical"
             android:hint="@string/time"
             android:inputType="time"
             android:textColor="#009688"
             android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/select"
-            android:layout_width="85dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="5dp"
-            android:gravity="center"
-            android:textAlignment="center"
-            android:textColor="#009688"
-            android:textSize="16sp" />
-
         <Spinner
             android:id="@+id/spinner"
-            android:layout_width="40dp"
-            android:layout_height="match_parent" />
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="3" />
 
         <Button
             android:id="@+id/save"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
 
-            android:layout_marginStart="30dp"
+            android:layout_weight="1"
             android:text="@string/save"
             android:textColor="#FFEB3B"
             android:textSize="20sp" />
@@ -120,6 +112,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:text="@string/total"
             android:textColor="#BF784C" />
@@ -150,7 +143,7 @@
         android:id="@+id/recyclerMemo"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="18dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="24dp"

@@ -1,31 +1,23 @@
 package org.study2.checklist
 
 import android.R
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-
 import android.view.View
-
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-
-
+import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import androidx.room.Room
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.study2.checklist.databinding.ActivityMainBinding
-
-
-import java.text.SimpleDateFormat
-import java.util.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class MainActivity : AppCompatActivity(), OnDeleteListener {
 
@@ -36,7 +28,7 @@ class MainActivity : AppCompatActivity(), OnDeleteListener {
     lateinit var helper: RoomHelper
     lateinit var memoAdapter: RecyclerAdapter
     lateinit var memoDAO: RoomMemoDAO
-
+    lateinit var content: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,13 +61,13 @@ class MainActivity : AppCompatActivity(), OnDeleteListener {
 
             save.setOnClickListener {
 
-                val content = select.text.toString()
+
                 if (content.isNotEmpty()) {
 
 
                     val time = time.text.toString()
 
-                    var date = datesearch.text.toString()
+                    val date = datesearch.text.toString()
 
                     val memo = RoomMemo(time, content, date)
 
@@ -84,22 +76,23 @@ class MainActivity : AppCompatActivity(), OnDeleteListener {
 
                 }
 
-
             }
             search.setOnClickListener {
 
                 serchrefreshAdapter()
-                timeDateSet()
+
 
             }
         }
 
 
-
-
-
     }
 
+
+    override fun onResume() {
+        timeDateSet()
+        super.onResume()
+    }
 
     fun insertMemo(memo: RoomMemo) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -119,7 +112,7 @@ class MainActivity : AppCompatActivity(), OnDeleteListener {
 
     fun refreshAdapter() {
         CoroutineScope(Dispatchers.IO).launch {
-            var date = binding.datesearch.text.toString()
+            val date = binding.datesearch.text.toString()
             memoList.clear()
             memoList.addAll(memoDAO.getDate(date))
             withContext(Dispatchers.Main) {
@@ -132,8 +125,8 @@ class MainActivity : AppCompatActivity(), OnDeleteListener {
 
     fun serchrefreshAdapter() {
         CoroutineScope(Dispatchers.IO).launch {
-            var date = binding.datesearch.text.toString()
-            Log.d("테스트","${date}")
+            val date = binding.datesearch.text.toString()
+
             memoList.clear()
             memoList.addAll(memoDAO.getDate(date))
 
@@ -145,20 +138,19 @@ class MainActivity : AppCompatActivity(), OnDeleteListener {
     }
 
 
-// 스피너코드
+    // 스피너코드
     fun spinerCode() {
 
-        val data: List<String> = listOf( "선택하세요","많음", "약간많음", "중간", "조금적음", "적음")
+        val data: List<String> = listOf("선택하세요", "많음", "약간많음", "중간", "조금적음", "적음")
 
-        val adapter = ArrayAdapter<String>(this, R.layout.simple_list_item_1, data)
-
+        var adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,data)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         with(binding) {
 
             spinner.adapter = adapter
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
-                    val selected = data[0]
-                    binding.select.text = selected
+
                 }
 
                 override fun onItemSelected(
@@ -167,9 +159,9 @@ class MainActivity : AppCompatActivity(), OnDeleteListener {
                     position: Int,
                     id: Long
                 ) {
-                    val selected = data[position]
-                    binding.select.text = selected
-
+                    content = parent?.getItemAtPosition(position).toString()
+                    //스피너 처음 표시되는 컬러 색상 변경
+                    (parent?.getChildAt(0) as? TextView)?.setTextColor(Color.parseColor("#009688"))
                 }
             }
         }
@@ -177,16 +169,19 @@ class MainActivity : AppCompatActivity(), OnDeleteListener {
     //스피너코드
 
     // 시간 날짜 입력코드
-    fun timeDateSet() {
-        val now = System.currentTimeMillis()
-        val date = Date(now)
 
-        val sdf = SimpleDateFormat("YYYY-MM-dd")
-        val timestamp: String = sdf.format(date)
+    private fun timeDateSet() {
+//        val now = System.currentTimeMillis()
+//        val date = Date(now)
+        val currentTime = LocalDateTime.now()
+
+        val sdf = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val timestamp: String = currentTime.format(sdf)
         binding.datesearch.setText(timestamp)
 
-        val stf = SimpleDateFormat("HH:mm")
-        val getTimes = stf.format(date)
+        val stf = DateTimeFormatter.ofPattern("HH:mm")
+
+        val getTimes = currentTime.format(stf)
         binding.time.setText(getTimes)
 
 
